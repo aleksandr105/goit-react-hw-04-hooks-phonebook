@@ -75,7 +75,7 @@ export const App = () => {
             />
           </>
         ) : (
-          <NoContactMessage>no contact yet</NoContactMessage>
+          <NoContactMessage>No contact yet</NoContactMessage>
         )}
       </Container>
     </section>
