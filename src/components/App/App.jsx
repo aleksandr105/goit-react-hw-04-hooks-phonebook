@@ -1,81 +1,83 @@
-import React, { Component } from 'react';
-import { Container, TitleLIstContacts, Titel } from './App.styled';
+import {
+  Container,
+  TitleLIstContacts,
+  Titel,
+  NoContactMessage,
+} from './App.styled';
 import { ContactForm } from '../ContatctForm/ContactForm';
 import { ContactList } from 'components/ContactList/ContactList';
 import { Filter } from '../Filter/Filter';
+import { useEffect, useState } from 'react';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    filter: '',
-  };
+export const App = () => {
+  const [contacts, setContacts] = useState([]);
+  const [filter, setfilter] = useState('');
 
-  componentDidMount() {
+  useEffect(() => {
     const contactsJson = localStorage.getItem('contactsData');
-    if (contactsJson) {
-      this.setState({ contacts: JSON.parse(contactsJson) });
-    }
-  }
 
-  componentDidUpdate(_, prevState) {
-    if (prevState.contacts.length !== this.state.contacts.length) {
-      localStorage.setItem('contactsData', JSON.stringify(this.state.contacts));
+    if (JSON.parse(contactsJson).length === 0) {
+      return;
     }
-  }
+    setContacts(JSON.parse(contactsJson));
+  }, []);
 
-  handleSubmit = ({ name, number }, { resetForm }) => {
+  useEffect(() => {
+    localStorage.setItem('contactsData', JSON.stringify(contacts));
+  }, [contacts]);
+
+  const handleSubmit = ({ name, number }, { resetForm }) => {
     const contact = {
       id: name,
       name: name,
       number: number.match(/\d{3}(?=\d{2,3})|\d+/g).join('-'),
     };
 
-    const contactСheck = this.state.contacts.find(
+    const contactСheck = contacts.find(
       el => el.name.toLowerCase() === name.toLowerCase()
     );
 
     !contactСheck
-      ? this.setState(prevState => ({
-          contacts: [contact, ...prevState.contacts],
-        }))
+      ? setContacts(prevContact => [contact, ...prevContact])
       : alert(`${name} is alreadi in contacts`);
 
     resetForm();
   };
 
-  deleteContact = id => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== id),
-    }));
+  const deleteContact = id => {
+    setContacts(contacts.filter(contact => contact.id !== id));
   };
 
-  showFiltered = () => {
-    return this.state.contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+  const showFiltered = () => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
     );
   };
 
-  changeFilter = e => {
-    this.setState({ filter: e.target.value });
+  const changeFilter = e => {
+    setfilter(e.target.value);
   };
 
-  render() {
-    const visibalFiltr = this.showFiltered();
-    return (
-      <section>
-        <Container>
-          <Titel>Phonebook</Titel>
-          <ContactForm handleSubmit={this.handleSubmit} />
-          <TitleLIstContacts>Contacts</TitleLIstContacts>
-          <Filter changeFilter={this.changeFilter} />
-          {this.state.contacts.length > 0 && (
+  const visibalFiltr = showFiltered();
+  return (
+    <section>
+      <Container>
+        <Titel>Phonebook</Titel>
+        <ContactForm handleSubmit={handleSubmit} />
+        <TitleLIstContacts>Contacts</TitleLIstContacts>
+
+        {contacts.length > 0 ? (
+          <>
+            <Filter changeFilter={changeFilter} />
             <ContactList
               visibalFiltr={visibalFiltr}
-              deleteContact={this.deleteContact}
+              deleteContact={deleteContact}
             />
-          )}
-        </Container>
-      </section>
-    );
-  }
-}
+          </>
+        ) : (
+          <NoContactMessage>no contact yet</NoContactMessage>
+        )}
+      </Container>
+    </section>
+  );
+};

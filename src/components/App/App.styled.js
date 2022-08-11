@@ -15,3 +15,9 @@ export const Titel = styled.h1`
   margin-bottom: 40px;
   text-align: center;
 `;
+
+export const NoContactMessage = styled.p`
+  text-align: center;
+  font-size: 20px;
+  color: red;
+`;
