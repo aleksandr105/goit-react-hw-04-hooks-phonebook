@@ -27,21 +27,23 @@ export const App = () => {
   }, [contacts]);
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
-    const contact = {
-      id: name,
-      name: name,
-      number: number.match(/\d{3}(?=\d{2,3})|\d+/g).join('-'),
-    };
-
     const contactСheck = contacts.find(
       el => el.name.toLowerCase() === name.toLowerCase()
     );
 
-    !contactСheck
-      ? setContacts(prevContact => [contact, ...prevContact])
-      : alert(`${name} is alreadi in contacts`);
+    if (!contactСheck) {
+      const contact = {
+        id: name,
+        name: name,
+        number: number.match(/\d{3}(?=\d{2,3})|\d+/g).join('-'),
+      };
 
-    resetForm();
+      setContacts(prevContact => [contact, ...prevContact]);
+
+      resetForm();
+    } else {
+      alert(`${name} is alreadi in contacts`);
+    }
   };
 
   const deleteContact = id => {
