@@ -16,14 +16,14 @@ export const App = () => {
   useEffect(() => {
     const contactsJson = localStorage.getItem('contactsData');
 
-    if (JSON.parse(contactsJson).length === 0) {
-      return;
+    if (contactsJson) {
+      setContacts(JSON.parse(contactsJson));
     }
-    setContacts(JSON.parse(contactsJson));
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('contactsData', JSON.stringify(contacts));
+    if (contacts.length !== 0)
+      localStorage.setItem('contactsData', JSON.stringify(contacts));
   }, [contacts]);
 
   const handleSubmit = ({ name, number }, { resetForm }) => {
